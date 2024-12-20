@@ -31,3 +31,7 @@ php artisan queue:work
 
 ### Output
 ![img.png](img.png)
+
+### Todo
+- [ ] Dynamic font size based on the canvas width and security name
+- [ ] Dynamic position of change/percent changes based on stock value
