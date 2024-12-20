@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('ticker')->unique();
-            $table->double('price');
-            $table->double('change');
-            $table->double('percent_change');
+            $table->double('price')->nullable();
+            $table->double('change')->nullable();
+            $table->double('percent_change')->nullable();
             $table->timestamps();
         });
     }
