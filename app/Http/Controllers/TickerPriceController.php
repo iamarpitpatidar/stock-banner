@@ -19,13 +19,13 @@ class TickerPriceController extends Controller
     {
         $stock = Stock::query()->where('ticker', strtoupper($ticker))->first();
         if (!$stock) {
-                $stock = Stock::query()->create([
-                    'name' => $ticker,
-                    'ticker' => strtoupper($ticker),
-                    'price' => '-',
-                    'change' => '-',
-                    'percent_change' => '-',
-                ]);
+            $stock = Stock::query()->create([
+                'name' => $ticker,
+                'ticker' => strtoupper($ticker),
+                'price' => '-',
+                'change' => '-',
+                'percent_change' => '-',
+            ]);
             $this->getTickerData($stock);
             $this->generateStockBanner($stock);
         }
