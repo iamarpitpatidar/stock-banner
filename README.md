@@ -19,6 +19,9 @@ php artisan migrate --seed
 
 # Run the app
 php artisan serve
+
+# Check output on url {domain}/ticker/{ticker}
+# example: https://arpitpatidar.com/ticker/aapl
 ```
 
 ### Output
