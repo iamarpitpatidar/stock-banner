@@ -4,19 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Stock;
 use App\Services\AlpacaService;
+use App\Services\PolygonService;
 use App\Services\StockBannerService;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class TickerPriceController extends Controller
 {
     protected AlpacaService $alpacaService;
+    protected PolygonService $polygonService;
     protected StockBannerService $stockBannerService;
 
     public function __construct(
         AlpacaService $alpacaService,
+        PolygonService $polygonService,
         StockBannerService $stockBannerService
     ) {
         $this->alpacaService = $alpacaService;
+        $this->polygonService = $polygonService;
         $this->stockBannerService = $stockBannerService;
     }
 
@@ -30,7 +34,7 @@ class TickerPriceController extends Controller
         );
 
         if ($stock->wasRecentlyCreated) {
-            // todo - fetch stock name as well
+            $this->polygonService->fetchStockName($stock);
             $this->alpacaService->fetchTradeData($stock);
             $this->stockBannerService->generateStockBanner($stock);
         }
