@@ -73,7 +73,7 @@ class TickerPriceController extends Controller
     {
         $manager = new ImageManager(Driver::class);
 
-        $image = $manager->create(540, 220);
+        $image = $manager->create(540, 220)->fill('fff');
 
         $font_regular = resource_path().'/fonts/roboto/Roboto-Regular.ttf';
         $font_medium = resource_path().'/fonts/roboto/Roboto-Medium.ttf';
