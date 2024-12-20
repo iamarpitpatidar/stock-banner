@@ -5,7 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
+ * @property string $name
  * @property string $ticker
+ * @property int $price
+ * @property int $change
+ * @property int percent_change
  */
 class Stock extends Model
 {
@@ -13,6 +17,7 @@ class Stock extends Model
         'name',
         'ticker',
         'price',
-        'change'
+        'change',
+        'percent_change',
     ];
 }
