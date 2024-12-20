@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'alpaca' => [
+        'api_key_id' => env('ALPACA_API_KEY_ID'),
+        'api_key_secret' => env('ALPACA_API_KEY_SECRET'),
+    ]
 ];

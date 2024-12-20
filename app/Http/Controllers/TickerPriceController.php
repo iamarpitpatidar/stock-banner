@@ -3,63 +3,73 @@
 namespace App\Http\Controllers;
 
 use App\Models\Stock;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\View\View;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Imagick\Driver;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class TickerPriceController extends Controller
 {
-    public function index(string $ticker): View
+    /**
+     * @throws ConnectionException
+     */
+    public function index(string $ticker): BinaryFileResponse
     {
-//        $this->getTickerData($ticker);
-//        $this->getTickerPrice($ticker);
         $stock = Stock::query()->where('ticker', $ticker)->first();
-        return $this->printStockBanner($stock);
+//        if (!$stock) {
+//            $stock = Stock::query()->create([
+//                'name' => $ticker,
+//                'ticker' => strtoupper($ticker),
+//                'price' => '-',
+//                'change' => '-'
+//            ]);
+            $this->getTickerData($stock);
+//            $this->generateStockBanner($ticker);
+//        }
+
+        exit;
+        return $this->printStockBanner($ticker);
     }
 
-    private function getTickerData(string $ticker)
+    /**
+     * @throws ConnectionException
+     */
+    private function getTickerData(Stock $stock): void
     {
-        $apiKey = 'YOUR_API_KEY';
-        $ticker = 'AAPL';
-        $apiUrl = "https://finnhub.io/api/v1/quote?symbol={$ticker}&token={$apiKey}";
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $apiUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $response = curl_exec($ch);
-
-        if (curl_errno($ch)) {
-            echo 'Error:' . curl_error($ch);
-        } else {
-            $data = json_decode($response, true);
-
-            $currentPrice = $data['c'];
-            $previousClose = $data['pc'];
-            $percentChange = (($currentPrice - $previousClose) / $previousClose) * 100;
-
-            // Output the results
-            echo "Stock: {$ticker}\n";
-            echo "Current Price: \$" . number_format($currentPrice, 2) . "\n";
-            echo "Percentage Change: " . number_format($percentChange, 2) . "%\n";
-            Stock::query()->updateOrCreate(
-                [
-                    'name' => 'Real'
-                ],
-                ['ticker' => $ticker],
-            );
-        }
-        curl_close($ch);
+        // todo - fetch ticker name and update
+        $this->fetchTradeData($stock);
     }
 
-    private function getTickerPrice(string $ticker)
+    /**
+     * @throws ConnectionException
+     */
+    function fetchTradeData(Stock $stock): void
     {
+        $apiKeyId = config('services.alpaca.api_key_id');
+        $apiKeySecret = config('services.alpaca.api_key_secret');
 
+        $baseURL = 'https://data.alpaca.markets';
+        $response = Http::withHeaders([
+            'APCA-API-KEY-ID' => $apiKeyId,
+            'APCA-API-SECRET-KEY' => $apiKeySecret,
+        ])
+            ->get($baseURL. '/v2/stocks/'. $stock->ticker . '/snapshot')->json();
+
+        $latestTrade = $response['latestTrade'];
+        $previousDayBar = $response['prevDailyBar'];
+        $change = round(($latestTrade['p'] - $previousDayBar['c']) / $previousDayBar['c'] * 100, 2);
+
+        $stock->update([
+            'price' => $latestTrade['p'],
+            'change' => $change
+        ]);
     }
 
-    private function printStockBanner()
+    private function generateStockBanner(string $ticker)
     {
-//        $width = request('width', 300);
+        //        $width = request('width', 300);
 //        $height = request('height', 300);
 //        $color = request('color', 'ff0000');
 //        $text = request('text', 'Dynamic Image');
@@ -75,9 +85,13 @@ class TickerPriceController extends Controller
 
         $manager = new ImageManager(Driver::class);
 
-        $image = $manager->create(512, 512)->fill('ccc');
+        $image = $manager->create(512, 512)->fill('456');
         $imageData = $image->toPng();
-        Storage::put('public/ticker/' . 'AAPL' . '.png', $imageData);
-        exit;
+        Storage::put('ticker/' . $ticker . '.png', $imageData);
+    }
+
+    private function printStockBanner(string $ticker): BinaryFileResponse
+    {
+        return response()->file(storage_path('app/private/ticker/' . $ticker . '.png'));
     }
 }
