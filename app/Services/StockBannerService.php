@@ -33,7 +33,7 @@ class StockBannerService
 
         $isPositive = $stock->change >= 0;
         $changeColor = $isPositive ? 'green' : 'red';
-        $changeSign = $isPositive ? '+' : '-';
+        $changeSign = $isPositive ? '+' : '';
 
         $image->text(strtoupper($stock->ticker), 20, 48, function ($font) use ($fontBold) {
             $font->file($fontBold);
@@ -73,6 +73,6 @@ class StockBannerService
 
     public function getStockBannerPath(string $ticker): string
     {
-        return storage_path('app/ticker/' . strtolower($ticker) . '.png');
+        return storage_path('app/private/ticker/' . strtolower($ticker) . '.png');
     }
 }
