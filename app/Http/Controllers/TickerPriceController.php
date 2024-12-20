@@ -18,17 +18,18 @@ class TickerPriceController extends Controller
     public function index(string $ticker): BinaryFileResponse
     {
         $stock = Stock::query()->where('ticker', strtoupper($ticker))->first();
-//        if (!$stock) {
-    //            $stock = Stock::query()->create([
-    //                'name' => $ticker,
-    //                'ticker' => strtoupper($ticker),
-    //                'price' => '-',
-    //                'change' => '-',
-    //                'percent_change' => '-',
-    //            ]);
-//            $this->getTickerData($stock);
+        if (!$stock) {
+                $stock = Stock::query()->create([
+                    'name' => $ticker,
+                    'ticker' => strtoupper($ticker),
+                    'price' => '-',
+                    'change' => '-',
+                    'percent_change' => '-',
+                ]);
+            $this->getTickerData($stock);
             $this->generateStockBanner($stock);
-//        }
+        }
+
         return $this->printStockBanner($ticker);
     }
 
