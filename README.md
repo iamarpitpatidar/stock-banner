@@ -20,3 +20,6 @@ php artisan migrate --seed
 # Run the app
 php artisan serve
 ```
+
+### Output
+![img.png](img.png)
