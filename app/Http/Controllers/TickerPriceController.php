@@ -30,7 +30,7 @@ class TickerPriceController extends Controller
     {
         $stock = Stock::query()->firstOrCreate(
             ['ticker' => strtoupper($ticker)],
-            ['name' => $ticker, 'price' => 0, 'change' => 0, 'percent_change' => 0]
+            ['name' => $ticker, 'price' => null, 'change' => null, 'percent_change' => null]
         );
 
         if ($stock->wasRecentlyCreated) {
