@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\GenerateStockBannerJob;
 use App\Models\Stock;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
@@ -47,6 +48,8 @@ class AlpacaService
                 'change' => $change,
                 'percent_change' => $percent_change,
             ]);
+
+            GenerateStockBannerJob::dispatch($stock);
         } catch (\Exception $e) {
             logger()->error("Error fetching data for {$stock->ticker}: {$e->getMessage()}");
         }
